@@ -1,31 +1,44 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const FETCHING_DATA = "FETCHING_DATA";
-export const FETCHING_COMPLETE = 'FETCHING_COMPLETE';
-export const FETCHING_FAIL = 'FETCHING_FAIL';
+export const FETCH_DATA_START = "FETCH_DATA_START";
+export const FETCH_DATA_SUCCESS = "FETCH_DATA_SUCCESS";
+export const FETCH_DATA_FAILURE = "FETCH_DATA_FAILURE";
 
-export const ADDING_SMURF_START = "ADDING_SMURF_SUCCESS"
-export const ADDING_SMURF_SUCCESS = "ADDING_SMURF_SUCCESS"
-export const ADDING_SMURF_FAILURE = "ADDING_SMURF_FAILURE"
+export const POST_DATA_START = "POST_SMURF_START";
+export const POST_DATA_SUCCESS = "POST_SMURF_SUCCESS";
+export const POST_DATA_FAILURE = "POST_SMURF_FAILURE";
 
-export const fetchData = () => dispatch => {
-    dispatch({type: FETCHING_DATA});
-    
-    axios.get('http://localhost:3333/smurfs')
-    .then(response => dispatch({type: FETCHING_COMPLETE, payload: response.data}))
-    .catch(error => dispatch({FETCHING_FAIL, payload: error.response}))
+
+
+export const getSmurfs = () => dispatch => {
+    dispatch({ type: FETCH_DATA_START });
+
+    axios
+    .get("http://localhost:3333/smurfs")
+    .then(res => {
+        dispatch({ type: FETCH_DATA_SUCCESS, payload: res.data });
+    })
+    .catch(err => {
+        console.log(err.response);
+        dispatch({
+            type: FETCH_DATA_FAILURE,
+            payload: `${err.response.status} ${err.response.data}`
+        });
+    });
 };
 
-export const addSmurf = (smurf) => dispatch => {
-    
+export const addSmurf = newSmurf => dispatch => {
+
+    dispatch({ type: POST_DATA_START });
     axios
-        .post("http://localhost:3333/smurfs", smurf)
-        .then(response => {
-            console.log(response)
-            dispatch({
-                type: ADDING_SMURF_SUCCESS,
-                payload: response
-            })
-        })
-        .catch(error => console.log(error))
-}
+    .post("http://localhost:3333/smurfs", newSmurf)
+    .then(res => {
+        console.log("Post", res);
+        dispatch({ type: POST_DATA_SUCCESS, payload: res.data });
+    })
+        .catch(err => {
+        console.log(err);
+        dispatch({ type: POST_DATA_FAILURE, payload: err });
+    });
+};
+
